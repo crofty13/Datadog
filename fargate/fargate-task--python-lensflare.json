@@ -1,5 +1,5 @@
 {
-    "taskDefinitionArn": "arn:aws:ecs:eu-west-2:601427279990:task-definition/dans-python-task-with-DD:11",
+    "family": "dans-python-lensflare",
     "containerDefinitions": [
         {
             "name": "dans-python-container",
@@ -13,7 +13,7 @@
                 "-c",
                 "export DD_AGENT_HOST=$(curl http://169.254.169.254/latest/meta-data/local-ipv4); python3 website_logs-stdout2.py"
             ],
-	    "environment": [
+            "environment": [
                 {
                     "name": "DD_SERVICE",
                     "value": "pyfon"
@@ -39,14 +39,33 @@
             "volumesFrom": [],
             "workingDirectory": "/usr/src/app",
             "logConfiguration": {
-                "logDriver": "awslogs",
+                "logDriver": "awsfirelens",
                 "options": {
-                    "awslogs-group": "/ecs/dans-python-task",
-                    "awslogs-region": "eu-west-2",
-                    "awslogs-stream-prefix": "dans-python"
+                    "Host": "http-intake.logs.datadoghq.com",
+                    "TLS": "on",
+                    "apikey": "DATADOG_API_KEY_HERE_XXXXXXXXXXXXXXXX",
+                    "Name": "datadog"
                 }
             },
             "systemControls": []
+        },
+        {
+            "name": "log-router",
+            "image": "amazon/aws-for-fluent-bit:latest",
+            "cpu": 0,
+            "portMappings": [],
+            "essential": true,
+            "environment": [],
+            "mountPoints": [],
+            "volumesFrom": [],
+            "user": "0",
+            "systemControls": [],
+            "firelensConfiguration": {
+                "type": "fluentbit",
+                "options": {
+                    "enable-ecs-log-metadata": "true"
+                }
+            }
         },
         {
             "name": "datadog-agent",
@@ -66,7 +85,7 @@
                 },
                 {
                     "name": "DD_API_KEY",
-                    "value": "XXXXXXXXXXXXXXXXXXXXX"  # <--- CHANGE THIS WHEN DEPLOYING
+                    "value": "INSERT_KEY_HERE_XXXXXXXXXXXXXX"
                 },
                 {
                     "name": "DD_LOGS_CONFIG_CONTAINER_COLLECT_ALL",
@@ -79,67 +98,27 @@
             ],
             "mountPoints": [],
             "volumesFrom": [],
-            "logConfiguration": {
-                "logDriver": "awslogs",
-                "options": {
-                    "awslogs-group": "/ecs/dans-python-task",
-                    "awslogs-region": "eu-west-2",
-                    "awslogs-stream-prefix": "datadog"
-                }
-            },
             "systemControls": []
         }
     ],
-    "family": "dans-python-task-with-DD",
-    "taskRoleArn": "arn:aws:iam::601427279990:role/ecsTaskRole",
-    "executionRoleArn": "arn:aws:iam::601427279990:role/ecsTaskExecutionRole",
-    "networkMode": "awsvpc",
-    "revision": 11,
-    "volumes": [],
-    "status": "ACTIVE",
-    "requiresAttributes": [
-        {
-            "name": "com.amazonaws.ecs.capability.logging-driver.awslogs"
-        },
-        {
-            "name": "ecs.capability.execution-role-awslogs"
-        },
-        {
-            "name": "com.amazonaws.ecs.capability.docker-remote-api.1.19"
-        },
-        {
-            "name": "com.amazonaws.ecs.capability.docker-remote-api.1.17"
-        },
-        {
-            "name": "com.amazonaws.ecs.capability.task-iam-role"
-        },
-        {
-            "name": "com.amazonaws.ecs.capability.docker-remote-api.1.18"
-        },
-        {
-            "name": "ecs.capability.task-eni"
-        }
-    ],
-    "placementConstraints": [],
-    "compatibilities": [
-        "EC2",
-        "FARGATE"
-    ],
-    "requiresCompatibilities": [
-        "FARGATE"
-    ],
-    "cpu": "512",
-    "memory": "1024",
-    "registeredAt": "2024-11-14T10:00:24.693Z",
-    "registeredBy": "arn:aws:sts::601427279990:assumed-role/AWSReservedSSO_account-admin_18a9d6e974997719/daniel.croft@datadoghq.com",
     "tags": [
         {
             "key": "PrincipalId",
-            "value": "AROAYYB64AB3JW3VETDNL"     # <-- Will need to change this
+            "value": "AROAYYB64AB3JW3VETDNL"
         },
         {
             "key": "User",
             "value": "daniel.croft@datadoghq.com"
         }
-    ]
+    ],
+    "taskRoleArn": "arn:aws:iam::601427279990:role/ecsTaskRole",
+    "executionRoleArn": "arn:aws:iam::601427279990:role/ecsTaskExecutionRole",
+    "networkMode": "awsvpc",
+    "volumes": [],
+    "placementConstraints": [],
+    "requiresCompatibilities": [
+        "FARGATE"
+    ],
+    "cpu": "512",
+    "memory": "1024"
 }
