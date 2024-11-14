@@ -1,0 +1,65 @@
+#Runs these locally on Docker, does not build any containers.
+
+services:
+  dans_python_app:
+    image: python:3.12
+    container_name: dans-python-app
+    volumes:
+      - .:/usr/src/app
+    working_dir: /usr/src/app
+    depends_on:
+      - dd-agent  # Ensure dd-agent starts before python_app
+    networks:
+      - app-network
+    environment:
+      - DD_AGENT_HOST=dd-agent  # Set the DD_AGENT_HOST to point to the dd-agent container
+      #unified tags
+      - DD_SERVICE="dans-python"         # Datadog service name
+      - DD_VERSION=1.0
+      - DD_ENV="dev"                     # Datadog environment (e.g., dev, staging, prod)
+
+      - DD_TRACE_ENABLED=true      	 # Explicitly enable tracing
+      - DD_TRACE_AGENT_PORT=8126   	 # Default port for APM traces
+      - DD_LOGS_INJECTION=true           # Enable Datadog log injection
+      - DD_TRACE_SAMPLE_RATE=1           # Trace sample rate
+      - DD_PROFILING_ENABLED=true        # Enable Datadog profiling
+      - DD_APPSEC_ENABLED=true           # Enable Datadog application security
+      - DD_IAST_ENABLED=true             # Enable Datadog IAST (Interactive Application Security Testing)
+      - DD_APPSEC_SCA_ENABLED=true       # Enable Datadog SCA (Software Composition Analysis)
+
+      - DD_TRACE_DEBUG=true  # Enable verbose trace logging for debugging
+    command: >
+      sh -c "pip install -r requirements.txt && ddtrace-run python3 website_logs-stdout2.py"
+
+
+
+
+  dd-agent:
+    image: gcr.io/datadoghq/agent:7
+    container_name: dd-agent
+    environment:
+      - DD_API_KEY=xxxxxxxxxxxxxADDYOURKEYxxxxxxxxx  				# Datadog API key for the agent
+      - DD_SITE=datadoghq.com                       	# Datadog site (US by default)
+      #logs config
+      - DD_LOGS_ENABLED=true
+      - DD_LOGS_CONFIG_CONTAINER_COLLECT_ALL=true  	# Collect logs from all containers in the network
+      #apm config
+      - DD_APM_ENABLED=true
+      - DD_APM_NON_LOCAL_TRAFFIC=true
+      - DD_APM_RECEIVER_SOCKET=/var/run/datadog/apm.socket
+      - DD_DOGSTATSD_SOCKET=/var/run/datadog/dsd.socket
+    volumes:
+      - /var/run/datadog:/var/run/datadog
+      - /var/run/docker.sock:/var/run/docker.sock:ro  	# Mount Docker socket for container metrics
+      - /proc/:/host/proc/:ro                        	# Mount host's proc directory for process monitoring
+      - /sys/fs/cgroup/:/host/sys/fs/cgroup:ro        	# Mount cgroup for container resource usage
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro  # For Docker log collection
+    networks:
+      - app-network  # Custom network for communication with python_app
+    ports:
+      - "8126:8126"  # Expose APM and profiling port to allow external access if needed
+
+networks:
+  app-network:
+    driver: bridge
+

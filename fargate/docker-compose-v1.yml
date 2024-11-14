@@ -1,0 +1,10 @@
+version: '3'
+services:
+  python_app:
+    image: python:3.12
+    container_name: python_3_12_app
+    volumes:
+      - /Users/daniel.croft/Documents/python:/usr/src/app
+    working_dir: /usr/src/app
+    command: >
+      sh -c "pip install -r requirements.txt --root-user-action=ignore && python3 python-functions.py"

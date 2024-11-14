@@ -1,0 +1,146 @@
+{
+    "taskDefinitionArn": "arn:aws:ecs:eu-west-2:601427279990:task-definition/dans-python-task-with-DD:11",
+    "containerDefinitions": [
+        {
+            "name": "dans-python-container",
+            "image": "crofty1300/dans-python2:latest",
+            "cpu": 256,
+            "memory": 512,
+            "portMappings": [],
+            "essential": true,
+            "entryPoint": [
+                "python3"
+            ],
+            "command": [
+                "website_logs-stdout2.py"
+            ],
+            "environment": [
+                {
+                    "name": "DD_SERVICE",
+                    "value": "pyfon"
+                },
+                {
+                    "name": "DD_LOGS_INJECTION",
+                    "value": "true"
+                },
+                {
+                    "name": "DD_ENV",
+                    "value": "crofters"
+                },
+                {
+                    "name": "DD_VERSION",
+                    "value": "12.58"
+                },
+                {
+                    "name": "DD_RUNTIME_METRICS_ENABLED",
+                    "value": "true"
+                }
+            ],
+            "mountPoints": [],
+            "volumesFrom": [],
+            "workingDirectory": "/usr/src/app",
+            "logConfiguration": {
+                "logDriver": "awslogs",
+                "options": {
+                    "awslogs-group": "/ecs/dans-python-task",
+                    "awslogs-region": "eu-west-2",
+                    "awslogs-stream-prefix": "dans-python"
+                }
+            },
+            "systemControls": []
+        },
+        {
+            "name": "datadog-agent",
+            "image": "public.ecr.aws/datadog/agent:latest",
+            "cpu": 100,
+            "memory": 256,
+            "portMappings": [],
+            "essential": false,
+            "environment": [
+                {
+                    "name": "ECS_FARGATE",
+                    "value": "true"
+                },
+                {
+                    "name": "DD_TRACE_ENABLED",
+                    "value": "true"
+                },
+                {
+                    "name": "DD_API_KEY",
+                    "value": "XXXXXXXXXXXXXXXXXXXXX"  # <--- CHANGE THIS WHEN DEPLOYING
+                },
+                {
+                    "name": "DD_LOGS_CONFIG_CONTAINER_COLLECT_ALL",
+                    "value": "true"
+                },
+                {
+                    "name": "DD_LOG_LEVEL",
+                    "value": "debug"
+                }
+            ],
+            "mountPoints": [],
+            "volumesFrom": [],
+            "logConfiguration": {
+                "logDriver": "awslogs",
+                "options": {
+                    "awslogs-group": "/ecs/dans-python-task",
+                    "awslogs-region": "eu-west-2",
+                    "awslogs-stream-prefix": "datadog"
+                }
+            },
+            "systemControls": []
+        }
+    ],
+    "family": "dans-python-task-with-DD",
+    "taskRoleArn": "arn:aws:iam::601427279990:role/ecsTaskRole",
+    "executionRoleArn": "arn:aws:iam::601427279990:role/ecsTaskExecutionRole",
+    "networkMode": "awsvpc",
+    "revision": 11,
+    "volumes": [],
+    "status": "ACTIVE",
+    "requiresAttributes": [
+        {
+            "name": "com.amazonaws.ecs.capability.logging-driver.awslogs"
+        },
+        {
+            "name": "ecs.capability.execution-role-awslogs"
+        },
+        {
+            "name": "com.amazonaws.ecs.capability.docker-remote-api.1.19"
+        },
+        {
+            "name": "com.amazonaws.ecs.capability.docker-remote-api.1.17"
+        },
+        {
+            "name": "com.amazonaws.ecs.capability.task-iam-role"
+        },
+        {
+            "name": "com.amazonaws.ecs.capability.docker-remote-api.1.18"
+        },
+        {
+            "name": "ecs.capability.task-eni"
+        }
+    ],
+    "placementConstraints": [],
+    "compatibilities": [
+        "EC2",
+        "FARGATE"
+    ],
+    "requiresCompatibilities": [
+        "FARGATE"
+    ],
+    "cpu": "512",
+    "memory": "1024",
+    "registeredAt": "2024-11-14T10:00:24.693Z",
+    "registeredBy": "arn:aws:sts::601427279990:assumed-role/AWSReservedSSO_account-admin_18a9d6e974997719/daniel.croft@datadoghq.com",
+    "tags": [
+        {
+            "key": "PrincipalId",
+            "value": "AROAYYB64AB3JW3VETDNL"     # <-- Will need to change this
+        },
+        {
+            "key": "User",
+            "value": "daniel.croft@datadoghq.com"
+        }
+    ]
+}
