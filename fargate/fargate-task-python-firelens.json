@@ -1,0 +1,124 @@
+{
+    "family": "dans-python-lensflare",
+    "containerDefinitions": [
+        {
+            "name": "dans-python-container",
+            "image": "crofty1300/dans-python2:latest",
+            "cpu": 256,
+            "memory": 512,
+            "portMappings": [],
+            "essential": true,
+            "entryPoint": [
+                "sh",
+                "-c",
+                "export DD_AGENT_HOST=$(curl http://169.254.169.254/latest/meta-data/local-ipv4); python3 website_logs-stdout2.py"
+            ],
+            "environment": [
+                {
+                    "name": "DD_SERVICE",
+                    "value": "pyfon"
+                },
+                {
+                    "name": "DD_LOGS_INJECTION",
+                    "value": "true"
+                },
+                {
+                    "name": "DD_ENV",
+                    "value": "crofters"
+                },
+                {
+                    "name": "DD_VERSION",
+                    "value": "12.58"
+                },
+                {
+                    "name": "DD_RUNTIME_METRICS_ENABLED",
+                    "value": "true"
+                }
+            ],
+            "mountPoints": [],
+            "volumesFrom": [],
+            "workingDirectory": "/usr/src/app",
+            "logConfiguration": {
+                "logDriver": "awsfirelens",
+                "options": {
+                    "Host": "http-intake.logs.datadoghq.com",
+                    "TLS": "on",
+                    "apikey": "DATADOG_API_KEY_HERE_XXXXXXXXXXXXXXXX",
+                    "Name": "datadog"
+                }
+            },
+            "systemControls": []
+        },
+        {
+            "name": "log-router",
+            "image": "amazon/aws-for-fluent-bit:latest",
+            "cpu": 0,
+            "portMappings": [],
+            "essential": true,
+            "environment": [],
+            "mountPoints": [],
+            "volumesFrom": [],
+            "user": "0",
+            "systemControls": [],
+            "firelensConfiguration": {
+                "type": "fluentbit",
+                "options": {
+                    "enable-ecs-log-metadata": "true"
+                }
+            }
+        },
+        {
+            "name": "datadog-agent",
+            "image": "public.ecr.aws/datadog/agent:latest",
+            "cpu": 100,
+            "memory": 256,
+            "portMappings": [],
+            "essential": false,
+            "environment": [
+                {
+                    "name": "ECS_FARGATE",
+                    "value": "true"
+                },
+                {
+                    "name": "DD_TRACE_ENABLED",
+                    "value": "true"
+                },
+                {
+                    "name": "DD_API_KEY",
+                    "value": "INSERT_KEY_HERE_XXXXXXXXXXXXXX"
+                },
+                {
+                    "name": "DD_LOGS_CONFIG_CONTAINER_COLLECT_ALL",
+                    "value": "true"
+                },
+                {
+                    "name": "DD_LOG_LEVEL",
+                    "value": "debug"
+                }
+            ],
+            "mountPoints": [],
+            "volumesFrom": [],
+            "systemControls": []
+        }
+    ],
+    "tags": [
+        {
+            "key": "PrincipalId",
+            "value": "AROAYYB64AB3JW3VETDNL"
+        },
+        {
+            "key": "User",
+            "value": "daniel.croft@datadoghq.com"
+        }
+    ],
+    "taskRoleArn": "arn:aws:iam::601427279990:role/ecsTaskRole",
+    "executionRoleArn": "arn:aws:iam::601427279990:role/ecsTaskExecutionRole",
+    "networkMode": "awsvpc",
+    "volumes": [],
+    "placementConstraints": [],
+    "requiresCompatibilities": [
+        "FARGATE"
+    ],
+    "cpu": "512",
+    "memory": "1024"
+}
