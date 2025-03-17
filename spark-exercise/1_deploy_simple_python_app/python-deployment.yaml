@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: simple-python-apm
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: simple-python-apm
+  template:
+    metadata:
+      labels:
+        app: simple-python-apm
+    spec:
+      containers:
+        - name: simple-python
+          image: simple-python:v1
+          imagePullPolicy: Never
+          ports:
+            - containerPort: 8000
+          env:
+            - name: DD_AGENT_HOST
+              value: "datadog-agent"  # Use the service name of the Datadog agent
+            - name: DD_TRACE_AGENT_PORT
+              value: "8126"
+            - name: DD_ENV
+              value: "dev"
+            - name: DD_SERVICE
+              value: "my-python-app"
+            - name: DD_VERSION
+              value: "1.0.0"
+            - name: DD_LOGS_INJECTION
+              value: "true"
+            - name: DD_TRACE_DEBUG
+              value: "true"

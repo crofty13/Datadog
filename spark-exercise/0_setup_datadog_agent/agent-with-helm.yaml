@@ -1,0 +1,33 @@
+datadog:
+  apiKeyExistingSecret: "datadog-secret"
+  site: "datadoghq.com"
+  clusterName: "minikube-cluster"
+
+  kubelet:
+    tlsVerify: false  # Disable TLS verification for Kubelet
+
+  logs:
+    enabled: true
+    containerCollectAll: true  # Collect logs from all containers
+
+  apm:
+    portEnabled: true
+    hostPortConfig:
+      hostPort: 8126
+      log_level: debug
+      max_traces_per_second: 10
+
+  admissionController:
+    enabled: true
+    mutateUnlabelled: false
+
+  processAgent:
+    enabled: true  # Enable process monitoring
+
+  kubeStateMetricsEnabled: true  # Enable Kubernetes state metrics
+  orchestratorExplorer:
+    enabled: true  # Enable Kubernetes orchestrator explorer
+
+agents:
+  image:
+    tag: "7.60.0"  # Specify Datadog Agent version
