@@ -21,7 +21,7 @@ Click Copy.
 
 
 ## Store your API Key in Kubernetes
-kubectl create secret generic datadog-secret --from-literal api-key=PASTE_YOUR_KEY_HERE
+kubectl create secret generic datadog-secret --from-literal api-key=[PASTE_YOUR_KEY_HERE]
 
 ## Deploy the Datadog agent via Helm
 ```
