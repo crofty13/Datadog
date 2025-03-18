@@ -17,7 +17,7 @@ kubectl create secret generic datadog-secret --from-literal api-key=PASTE_YOUR_K
 ## Deploy the Datadog agent via Helm
 helm upgrade --install datadog-agent datadog/datadog -f agent-with-helm.yaml --set targetSystem=linux
 
-## CHeck the status of your agent:
+## Check the status of your agent:
 The following is a cheat sheet to see what has been deployed
 
 ### kubectl get deployments
