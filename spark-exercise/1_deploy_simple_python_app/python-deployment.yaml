@@ -32,4 +32,4 @@ spec:
             - name: DD_LOGS_INJECTION
               value: "true"
             - name: DD_TRACE_DEBUG
-              value: "true"
+              value: "false"

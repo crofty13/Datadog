@@ -34,7 +34,7 @@ helm upgrade --install datadog-agent datadog/datadog -f agent-with-helm.yaml --s
 ## Check the status of your agent:
 The following is a cheat sheet to see what has been deployed
 
-### kubectl get deployments
+### See all your deployments
 This will give you a list of whats deployed:
 ```
 kubectl get deployments
@@ -42,5 +42,40 @@ NAME                               READY   UP-TO-DATE   AVAILABLE   AGE
 datadog-agent-cluster-agent        1/1     1            1           7d6h
 datadog-agent-kube-state-metrics   1/1     1            1           7d6h
 ```
+
+### See all your pods
+This will show you a list of all the pods running (including the internal kubernetes services
+```
+kubectl get pods -A -o wide
+NAMESPACE     NAME                                                READY   STATUS    RESTARTS   AGE     IP             NODE       NOMINATED NODE   READINESS GATES
+default       datadog-agent-4xn7w                                 2/2     Running   0          2m30s   10.244.0.7     minikube   <none>           <none>
+```
+
+
+### Check the agent logs
+Lets check the logs of the agent to make sure eveything is working OK.
+First get the name of the agent pod
+```
+kubectl get pods 
+NAME                                                READY   STATUS    RESTARTS   AGE
+datadog-agent-4xn7w                                 2/2     Running   0          5m59s     <------- This one, your pod name will be different
+datadog-agent-cluster-agent-9f958bdc7-2g8pq         1/1     Running   0          6m1s
+datadog-agent-kube-state-metrics-696546c965-czhnl   1/1     Running   0          17h
+```
+
+Now lets look at the logs:
+```
+kubectl logs datadog-agent-XXXXXX
+```
+
+
+### Get the agent status directly
+You can also talk to the agent directly on any cluster and get a detailed view of its output:
+```
+kubectl exec -it datadog-agent-4xn7w -- agent status
+```
+TIP: You can replace 'agent status' with bash and direclty access the container if you want to poke around.
+TIP 2: If you are only interested in a single service like APM you can grep for it like so: agent status | grep "APM" -A 25
+
 
 
