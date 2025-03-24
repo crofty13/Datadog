@@ -77,5 +77,11 @@ kubectl exec -it datadog-agent-4xn7w -- agent status
 TIP: You can replace 'agent status' with bash and direclty access the container if you want to poke around.
 TIP 2: If you are only interested in a single service like APM you can grep for it like so: agent status | grep "APM" -A 25
 
+### Look at your lovely new Agent in Datadog
 
+Go to [DataDog - Kubernetes Explorer](https://app.datadoghq.com/orchestration/explorer/cluster?)
+
+You should see a new cluster:
+
+![image-20250321140322467](/Users/daniel.croft/Documents/git-dan/spark-exercise/images/image-20250321140322467.png)
 

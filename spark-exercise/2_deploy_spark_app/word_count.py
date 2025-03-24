@@ -4,7 +4,7 @@ def main():
     spark = SparkSession.builder.appName("Top10CommonWords").getOrCreate()
 
     # Replace '/path/to/file.txt' with your own file path
-    text_rdd = spark.sparkContext.textFile("/path/to/shakesphere.txt")
+    text_rdd = spark.sparkContext.textFile("/mnt/shakesphere.txt")
 
     # Split each line into words
     words_rdd = text_rdd.flatMap(lambda line: line.split())
