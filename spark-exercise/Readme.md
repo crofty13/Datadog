@@ -8,7 +8,7 @@ Here we have a single VM running Docker that has a single container that runs Mi
 
 **If you restart Minikube you will lose any changes you make**
 
-![image-20250324084804610](/Users/daniel.croft/Documents/git-dan/spark-exercise/images/image-20250324084804610.png)
+![image-20250324084804610](images/image-20250324084804610.png)
 
 ##How does Minikube work?
 Minikube itself is a Docker Image that itself contains a Docker instance and image repository to give you a single node cluster with direct access to all the features of Kubernetes for you to deploy workloads against.
