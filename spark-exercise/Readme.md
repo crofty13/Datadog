@@ -2,7 +2,7 @@
 
 Welcome to Datadog training 101.
 
-##Test Setup:
+## Test Setup:
 
 Here we have a single VM running Docker that has a single container that runs Minkube. The services (Helm, Kubectl) have already been installed and configured to talk to Minkube already.
 
