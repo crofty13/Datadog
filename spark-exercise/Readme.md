@@ -9,7 +9,7 @@ Here we have a single VM running Docker that has a single container that runs Mi
 **If you restart Minikube you will lose any changes you make**
 
 ![image-20250324084804610](images/image-20250324084804610.png)
-
+<img src="images/image-20250324084804610.png" alt="My image" width="200"/>
 ##How does Minikube work?
 Minikube itself is a Docker Image that itself contains a Docker instance and image repository to give you a single node cluster with direct access to all the features of Kubernetes for you to deploy workloads against.
 
@@ -20,3 +20,10 @@ Minikube itself is a Docker Image that itself contains a Docker instance and ima
 The Datadog agent in this example will be configured to talk directly to the Kubernetes API-Server to discover namespace, schedules etc. 
 
 Python applications use a dd-trace wrapper to report APM spans/trace IDs.
+
+
+## Setup your VM
+I have created an AMI image with Minikube/Helm/Docker all installed for you. You simply need to login to our shared internal AWS account and build a fresh VM with it:
+
+- login to [Google Dashboard]](https://workspace.google.com/dashboard) and click on AWS SSO
+- Select 
