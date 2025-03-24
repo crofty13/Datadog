@@ -15,7 +15,7 @@ Minikube itself is a Docker Image that itself contains a Docker instance and ima
 
 **As a result to run workloads you need to copy your files to the minikube instance first before you run them (minikube cp)**
 
-![image-20250324085917478](/Users/daniel.croft/Documents/git-dan/spark-exercise/images/image-20250324085917478.png)
+![image-20250324085917478](images/image-20250324085917478.png)
 
 The Datadog agent in this example will be configured to talk directly to the Kubernetes API-Server to discover namespace, schedules etc. 
 
