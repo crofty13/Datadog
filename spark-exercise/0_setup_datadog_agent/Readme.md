@@ -84,4 +84,4 @@ Go to [DataDog - Kubernetes Explorer](https://app.datadoghq.com/orchestration/ex
 You should see a new cluster:
 
 ![image-20250321140322467](images/image-20250321140322467.png)
-
+<img src="images/image-20250321140322467.png" alt="My image" width="400"/>
