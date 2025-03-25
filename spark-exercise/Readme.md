@@ -8,7 +8,6 @@ Here we have a single VM running Docker that has a single container that runs Mi
 
 **If you restart Minikube you will lose any changes you make**
 
-![image-20250324084804610](images/image-20250324084804610.png)
 <img src="images/image-20250324084804610.png" alt="My image" width="400"/>
 ##How does Minikube work?
 Minikube itself is a Docker Image that itself contains a Docker instance and image repository to give you a single node cluster with direct access to all the features of Kubernetes for you to deploy workloads against.
@@ -31,7 +30,7 @@ I have created an AMI image with Minikube/Helm/Docker all installed for you. You
 
 - Select **Datadog Sandbox**, account-admin
 
-  ![image-20250324163900606](spark-exercise/images/image-20250324163900606.png)
+  ![image-20250324163900606](images/image-20250324163900606.png)
 
 ### Creating the VM
 
@@ -49,7 +48,7 @@ I have created an AMI image with Minikube/Helm/Docker all installed for you. You
   - Security Group:	launch-wizard-20
 
 Note: Finding the AMI can be tricky you have to search for it rather then click the ones listed:
-![image-20250324164734648](spark-exercise/images/image-20250324164734648.png)
+![image-20250324164734648](images/image-20250324164734648.png)
 
 ### Accessing your new VM
 
