@@ -83,5 +83,5 @@ Go to [DataDog - Kubernetes Explorer](https://app.datadoghq.com/orchestration/ex
 
 You should see a new cluster:
 
-![image-20250321140322467](/Users/daniel.croft/Documents/git-dan/spark-exercise/images/image-20250321140322467.png)
+![image-20250321140322467](images/image-20250321140322467.png)
 
