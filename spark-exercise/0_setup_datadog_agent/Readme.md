@@ -8,7 +8,7 @@ We are going to be running Minikube ontop of Docker. This will create a single d
 ```
 sudo usermod -aG docker $USER && newgrp docker
 minikube delete
-minikube start --driver=docker
+minikube start --driver=docker --cpus=max
 ```
 
 
