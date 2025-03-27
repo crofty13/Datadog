@@ -8,7 +8,7 @@ spec:
   mode: cluster
   image: spark:3.5.3-numpy
   imagePullPolicy: IfNotPresent
-  mainApplicationFile: "local:///mnt/data/real_time_order_processing.py"
+  mainApplicationFile: "local:///mnt/real_time_order_processing.py"
   sparkVersion: 3.5.3
   sparkConf:
     "spark.executor.memory": "1g"
@@ -27,16 +27,16 @@ spec:
     serviceAccount: spark-operator-spark
     volumeMounts:
       - name: data-volume
-        mountPath: /mnt/data
+        mountPath: /mnt
   executor:
     cores: 1
     memory: "1g"
     instances: 2
     volumeMounts:
       - name: data-volume
-        mountPath: /mnt/data
+        mountPath: /mnt
   volumes:
     - name: data-volume
       hostPath:
-        path: /mnt/data  # The local Minikube directory
+        path: /mnt  # The local Minikube directory
         type: Directory
