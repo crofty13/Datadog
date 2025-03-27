@@ -64,7 +64,7 @@ you can now access your VM like so:
 
 Once you are on the VM make sure you are in the /home/ubuntu directory.
 
-`git clone git@github.com:crofty13/Datadog.git`
+`git clone https://github.com/crofty13/Datadog.git`
 
 All the files you will need are in **Datadog/spark-exercise.** Enjoy!
 
