@@ -16,10 +16,10 @@ data_schema = StructType([
 # Read real-time data from JSON file
 orders_df = spark.readStream.format("json") \
     .schema(data_schema) \
-    .load("/mnt/data/orders")
+    .load("/mnt/orders")
 
 # Load product catalog
-products = spark.read.csv("/mnt/data/products.csv", header=True, inferSchema=True)
+products = spark.read.csv("/mnt/products.csv", header=True, inferSchema=True)
 
 # Transformation logic: Calculate total sales per category
 orders_with_products = orders_df.join(products, orders_df.orderId == products.productId, "left")
@@ -29,7 +29,7 @@ total_sales = orders_with_products.withWatermark("timestamp", "30 seconds") \
         expr("sum(amount * price)").alias("totalValue"))
 
 # Define the output file path
-output_path = "/mnt/data/processed_results"
+output_path = "/mnt/processed_results"
 
 # Output the results to the console
 #query = total_sales.writeStream.outputMode("update").format("console").start()
@@ -38,7 +38,7 @@ output_path = "/mnt/data/processed_results"
 query = total_sales.writeStream.outputMode("append") \
     .format("json") \
     .option("path", output_path) \
-    .option("checkpointLocation", "/mnt/data/checkpoint") \
+    .option("checkpointLocation", "/mnt/checkpoint") \
     .trigger(processingTime="30 seconds") \
     .start()
 
