@@ -52,7 +52,7 @@ If you now look in Datadog we can check that the container is running as expecte
 
 
 ### Enabling Data Jobs Manager
-At present we can only see Spark workloads running at the container level. If we want to see waht the jobs are actually doing we need to inject the datadog java libraries at boot time so that we can capture more low level metrics without needing to do a code change. 
+At present we can only see Spark workloads running at the container level. If we want to see what the jobs are actually doing we need to inject the datadog java libraries at boot time so that we can capture more low level metrics without needing to do a code change. 
 
 Go back to the spark-job.yaml file and uncomment the following lines:
 ```
