@@ -3,7 +3,7 @@ import time
 import random
 import os
 
-output_dir = "/mnt/data/orders"
+output_dir = "/mnt/orders"
 
 # Ensure output directory exists
 os.makedirs(output_dir, exist_ok=True)
