@@ -28,6 +28,8 @@ kubectl create secret generic datadog-secret --from-literal api-key=[PASTE_YOUR_
 
 ## Deploy the Datadog agent via Helm
 ```
+helm repo add datadog https://helm.datadoghq.com
+helm repo update
 helm upgrade --install datadog-agent datadog/datadog -f agent-with-helm.yaml --set targetSystem=linux
 ```
 
