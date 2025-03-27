@@ -5,6 +5,9 @@ In this tutorial we will build a new container with a very simple python app and
 As we are using Minikube there are a few extra steps we need to do;
 - source the Minkube enviornment 
 - copy the necesary files to the Minkube container
+
+Make sure you are in the directory the files are in (1_deploy_simple_python_app) on your VM.
+
 ```
 eval $(minikube -p minikube docker-env)
 
