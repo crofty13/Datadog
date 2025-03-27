@@ -15,20 +15,20 @@ This lab will require you to create a few folders and change the access rights s
 
 Navigate to the correct folder
 ```
-cd /path/to/spark-djm/4. Streaming Jobs/
+cd /path/to/Datadog/3_deploy_spark_streaming_jacob
 ```
 
 Lets copy the files in the directory to your newly created folder
 ```
-minikube cp order_generator.py /mnt/data/order_generator.py
-minikube cp products.csv /mnt/data/products.csv
-minikube cp real_time_order_processing.py /mnt/data/real_time_order_processing.py
+minikube cp order_generator.py /mnt/order_generator.py
+minikube cp products.csv /mnt/products.csv
+minikube cp real_time_order_processing.py /mnt/real_time_order_processing.py
 ```
 
 SSH in to your minikube cluster and verify that the files have been copied:
 ```
 minikube ssh
-cd /mnt/data
+cd /mnt/
 ls
 ```
 
@@ -39,9 +39,9 @@ Start from /mnt/data:
 sudo mkdir orders
 sudo mkdir processed_results
 sudo mkdir checkpoint
-sudo chmod -R 777 /mnt/data/orders
-sudo chmod -R 777 /mnt/data/processed_results
-sudo chmod -R 777 /mnt/data/checkpoint
+sudo chmod -R 777 /mnt/orders
+sudo chmod -R 777 /mnt/processed_results
+sudo chmod -R 777 /mnt/checkpoint
 ```
 
 Now we should be ready to start generating orders and our spark jobs.
@@ -51,7 +51,7 @@ Now we should be ready to start generating orders and our spark jobs.
 First, we will have to start our order generation script, while connected to your minikube cluster run the order_generation.py script:
 ```
 minikube ssh
-cd /mnt/data
+cd /mnt/
 python3 order_generator.py
 ```
 
@@ -60,7 +60,7 @@ Let this terminal continue to run, open up a new tab in your terminal or a new w
 Let's try to run the spark-job, deploy it using the spark-job.yaml
 
 ```
-kubectl apply -f /path/to/spark-job.yaml
+kubectl apply -f spark-job.yaml
 ```
 
 Using the same window/tab that you used for checking new orders, navigate to the processed_results folder and check for new files. This might take a few minutes before new files are being generated.
