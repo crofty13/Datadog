@@ -36,7 +36,7 @@ It seems the spark container cannot mount our file as it is not present in Minku
 ```
 minikube cp word_count.py [MOUNT DIR]
 minikube cp shakesphere.txt [MOUNT DIR]
-kubectl delete sparkapplication word-count-job -n spark-operator
+kubectl delete sparkapplication word-count-job -n default
 ```
 
 Double check the application is gone:
