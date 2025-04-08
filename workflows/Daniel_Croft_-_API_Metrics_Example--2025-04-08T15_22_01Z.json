@@ -1,0 +1,167 @@
+{
+  "id": "43c476c9-4f7b-4dff-bc80-635a33aaa959",
+  "name": "Daniel Croft - API Metrics Example",
+  "description": "",
+  "tags": [],
+  "published": true,
+  "spec": {
+    "triggers": [
+      {
+        "startStepNames": [
+          "Make_request"
+        ],
+        "scheduleTrigger": {
+          "rruleExpression": "DTSTART:20250408T152128Z\nFREQ=MINUTELY;INTERVAL=1"
+        }
+      }
+    ],
+    "steps": [
+      {
+        "name": "Make_request",
+        "actionId": "com.datadoghq.http.request",
+        "parameters": [
+          {
+            "name": "verb",
+            "value": "GET"
+          },
+          {
+            "name": "url",
+            "value": "https://api.open-meteo.com/v1/forecast?"
+          },
+          {
+            "name": "urlParams",
+            "value": [
+              {
+                "key": "latitude",
+                "value": "52.52"
+              },
+              {
+                "key": "longitude",
+                "value": "13.41"
+              },
+              {
+                "key": "current",
+                "value": "temperature_2m"
+              }
+            ]
+          }
+        ],
+        "outboundEdges": [
+          {
+            "nextStepName": "get_temp",
+            "branchName": "main"
+          }
+        ],
+        "display": {
+          "bounds": {
+            "x": 0,
+            "y": 216
+          }
+        }
+      },
+      {
+        "name": "get_temp",
+        "actionId": "com.datadoghq.datatransformation.func",
+        "parameters": [
+          {
+            "name": "script",
+            "value": "const temperature_2m = $.Steps.Make_request.body.current.temperature_2m;\nconst current_time = Math.floor(Date.now() / 1000);\n\nreturn {\n  timestamp: current_time,\n  temperature: temperature_2m\n};"
+          },
+          {
+            "name": "description",
+            "value": ""
+          }
+        ],
+        "outboundEdges": [
+          {
+            "nextStepName": "Send_to_Datadog",
+            "branchName": "main"
+          },
+          {
+            "nextStepName": "Echo",
+            "branchName": "main"
+          }
+        ],
+        "display": {
+          "bounds": {
+            "x": 0,
+            "y": 432
+          }
+        }
+      },
+      {
+        "name": "Send_to_Datadog",
+        "actionId": "com.datadoghq.http.request",
+        "parameters": [
+          {
+            "name": "verb",
+            "value": "POST"
+          },
+          {
+            "name": "requestHeaders",
+            "value": [
+              {
+                "key": "DD-API-KEY",
+                "value": [
+                  "XXXXXXXXXXX ADD YOUR API KEY HERE XXXXXXXXXXXX"
+                ]
+              },
+              {
+                "key": "Content-Type",
+                "value": [
+                  "application/json"
+                ]
+              }
+            ]
+          },
+          {
+            "name": "url",
+            "value": "https://api.datadoghq.com/api/v1/series"
+          },
+          {
+            "name": "body",
+            "value": {
+              "series": [
+                {
+                  "metric": "temp_2m",
+                  "points": [
+                    [
+                      "${ Steps.get_temp.data.timestamp }",
+                      "${ Steps.get_temp.data.temperature }"
+                    ]
+                  ],
+                  "tags": [
+                    "test:ExampleMetric"
+                  ],
+                  "type": "gauge"
+                }
+              ]
+            }
+          }
+        ],
+        "display": {
+          "bounds": {
+            "x": 0,
+            "y": 576
+          }
+        }
+      },
+      {
+        "name": "Echo",
+        "actionId": "com.datadoghq.core.echo",
+        "parameters": [
+          {
+            "name": "value",
+            "value": "${ Steps.get_temp.data.temperature }"
+          }
+        ],
+        "display": {
+          "bounds": {
+            "x": 384,
+            "y": 576
+          }
+        }
+      }
+    ]
+  }
+}
