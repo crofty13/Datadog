@@ -33,7 +33,7 @@ Under **APM Workload Selection** Under **Target Namespaces** enter 'apps'
 Datadog should now have created a YAML file for us to use to deploy the. You will need to copy this and save it as a file called datadog-agent.yaml
 
 
-## Agent Deplpyment
+## Agent Deployment
 On your terminal use the following to deploy the agent:
 `kubectl apply -f datadog-agent.yaml`
 
@@ -57,8 +57,67 @@ You can check an individual agents status like so:
 Check that the agent is correctly showing within Datadog here [Datadog Fleet Management](https://app.datadoghq.com/fleet)
 
 
+## Build .Net Test Workload (optional)
+Inside the repo is a very simple .Net application that calls the library System.Net.Http that will create a trace for us.
+
+The application is already available on my Docker Repo here: [Dans Docker Repo](https://hub.docker.com/r/crofty1300/hello-datadog-dotnet)
+
+However if you wanted to build this and push it to your own the command is:
+`docker buildx build --platform linux/amd64,linux/arm64 \
+  -t [YOUR_REPO]/hello-datadog-dotnet:multiarch \
+  --push .`
+I build both amd64 and arm64 as most people have ARM based Macs.
 
 
+## Deploy .NET Test workloads
+Make sure first that you have a namespace called 'apps'
+`kubectl get namespaces`
+If you dont run:
+`kubectl create namespace apps`
+
+Deploy the existing YAML File in this repository:
+`kubectl apply -f hello-datadog-deployment.yml`
+
+
+## Checking things worked
+First lets make sure that the application is running:
+`kubectl get pods --all-namespaces`
+You shoukd see something like this:
+`NAMESPACE     NAME                                        READY   STATUS    RESTARTS      AGE
+apps          hello-datadog-deployment-7696ddd45d-dv6l2   1/1     Running   0             2m41s`
+
+Next lets check that the pod has been correctly instrumented by the Datadog agent:
+`kubectl get pod hello-datadog-deployment-7696ddd45d-dv6l2 -n apps -o yaml`
+This is how Datadogs auto-instrumentation works.
+When a new pod creation in the namespace apps is recieved by kubernetes the datadog agent will add a mount to that container at /opt/datadog:
+`  volumeMounts:
+    - mountPath: /opt/datadog-packages/datadog-apm-inject
+      name: datadog-auto-instrumentation
+    - mountPath: /etc/ld.so.preload
+      name: datadog-auto-instrumentation-etc
+      readOnly: true
+      recursiveReadOnly: Disabled
+    - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+      name: kube-api-access-4lvlx
+      readOnly: true
+      recursiveReadOnly: Disabled
+    - mountPath: /var/run/datadog
+      name: datadog
+      readOnly: true
+      recursiveReadOnly: Disabled
+    - mountPath: /opt/datadog/apm/library
+      name: datadog-auto-instrumentation
+`
+It will then determine the code that is being run and use a initContainer to install the correct libraries for tracing to take place. You can see this here:
+`
+initContainerStatuses:
+  - containerID: docker://9d6b9fcb5a14f6c7a2200604d83cc9ce8f174d0a7cfa8e21c24fd123fb33c4ea
+    image: gcr.io/datadoghq/apm-inject:0
+    imageID: docker-pullable://gcr.io/datadoghq/apm-inject@sha256:5fcfe7ac14f6eeb0fe086ac7021d013d764af573b8c2d98113abf26b4d09b58c
+    lastState: {}
+    name: datadog-init-apm-inject
+    ready: true
+`
 
 
 
