@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hello-datadog-deployment
+  namespace: apps
+  labels:
+    app: hello-datadog
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: hello-datadog
+  template:
+    metadata:
+      labels:
+        app: hello-datadog
+    spec:
+      containers:
+        - name: hello-datadog-container
+          image: crofty1300/hello-datadog-dotnet:arm64
+          ports:
+            - containerPort: 80
+
