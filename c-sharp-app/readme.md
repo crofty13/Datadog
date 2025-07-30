@@ -82,9 +82,12 @@ Deploy the existing YAML File in this repository:
 ## Checking things worked
 First lets make sure that the application is running:
 `kubectl get pods --all-namespaces`
+
 You shoukd see something like this:
-`NAMESPACE     NAME                                        READY   STATUS    RESTARTS      AGE
-apps          hello-datadog-deployment-7696ddd45d-dv6l2   1/1     Running   0             2m41s`
+`
+NAMESPACE     NAME                                        READY   STATUS    RESTARTS      AGE
+apps          hello-datadog-deployment-7696ddd45d-dv6l2   1/1     Running   0             2m41s
+`
 
 Next lets check that the pod has been correctly instrumented by the Datadog agent:
 `kubectl get pod hello-datadog-deployment-7696ddd45d-dv6l2 -n apps -o yaml`
@@ -118,6 +121,44 @@ initContainerStatuses:
     name: datadog-init-apm-inject
     ready: true
 `
+
+This is all orcastrated by a Mutating Webhook that kubernetes allows to perform the modification. You can see if by running:
+`kubectl get mutatingwebhookconfigurations`
+
+## Run Some Tests
+OK we should have an agent deployed and a very simple .NET application we can talk to to generate some tracing.
+
+To crate some trace simply use a curl statement like so:
+`curl http://localhost:8080`
+If this does not work or you have a different network setup you can check the loadbalancer details with
+`kubectl get svc hello-datadog-service -n apps`
+
+One we have run this a few times lets check the Datadog agent has some traces:
+`kubectl exec -it datadog-agent-7mz45 -- agent status | grep -A 20 APM`
+The output should look something like this:
+`
+APM Agent
+=========
+
+  Status: Running
+  Pid: 1
+  Uptime: 64227 seconds
+  Mem alloc: 18,597,952 bytes
+  Hostname: docker-desktop
+  Receiver: 0.0.0.0:8126
+  Endpoints:
+    https://trace.agent.datadoghq.com.
+
+  Receiver (previous minute)
+  ==========================
+    From .NET 7.0.20 (.NET), client 3.21.0.0
+      Traces received: 16 (10,574 bytes)
+      Spans received: 16
+
+
+
+    Priority sampling rate for 'service:hello-datadog-deployment,env:none': 100.0%
+    `
 
 
 
