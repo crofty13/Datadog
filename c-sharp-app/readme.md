@@ -42,10 +42,11 @@ On your terminal use the following to deploy the agent:
 If you run the following you can see if the cluster operator and agent are running:
 `kubectl get deployments`
 It should look like this:
-`NAME                    READY   UP-TO-DATE   AVAILABLE   AGE
+```
+NAME                    READY   UP-TO-DATE   AVAILABLE   AGE
 datadog-cluster-agent   1/1     1            1           44h
-datadog-operator        1/1     1            1           46h`
-
+datadog-operator        1/1     1            1           46h
+```
 You can check an individual agents status like so:
 `kubectl get pods` <- find the name of the agent pod you want to query.
 
@@ -63,9 +64,11 @@ Inside the repo is a very simple .Net application that calls the library System.
 The application is already available on my Docker Repo here: [Dans Docker Repo](https://hub.docker.com/r/crofty1300/hello-datadog-dotnet)
 
 However if you wanted to build this and push it to your own the command is:
-`docker buildx build --platform linux/amd64,linux/arm64 \
+```
+docker buildx build --platform linux/amd64,linux/arm64 \
   -t [YOUR_REPO]/hello-datadog-dotnet:multiarch \
-  --push .`
+  --push .
+```
 I build both amd64 and arm64 as most people have ARM based Macs.
 
 
@@ -84,16 +87,17 @@ First lets make sure that the application is running:
 `kubectl get pods --all-namespaces`
 
 You shoukd see something like this:
-`
+```
 NAMESPACE     NAME                                        READY   STATUS    RESTARTS      AGE
 apps          hello-datadog-deployment-7696ddd45d-dv6l2   1/1     Running   0             2m41s
-`
+```
 
 Next lets check that the pod has been correctly instrumented by the Datadog agent:
 `kubectl get pod hello-datadog-deployment-7696ddd45d-dv6l2 -n apps -o yaml`
 This is how Datadogs auto-instrumentation works.
 When a new pod creation in the namespace apps is recieved by kubernetes the datadog agent will add a mount to that container at /opt/datadog:
-`  volumeMounts:
+```
+volumeMounts:
     - mountPath: /opt/datadog-packages/datadog-apm-inject
       name: datadog-auto-instrumentation
     - mountPath: /etc/ld.so.preload
@@ -110,9 +114,9 @@ When a new pod creation in the namespace apps is recieved by kubernetes the data
       recursiveReadOnly: Disabled
     - mountPath: /opt/datadog/apm/library
       name: datadog-auto-instrumentation
-`
+```
 It will then determine the code that is being run and use a initContainer to install the correct libraries for tracing to take place. You can see this here:
-`
+```
 initContainerStatuses:
   - containerID: docker://9d6b9fcb5a14f6c7a2200604d83cc9ce8f174d0a7cfa8e21c24fd123fb33c4ea
     image: gcr.io/datadoghq/apm-inject:0
@@ -120,7 +124,7 @@ initContainerStatuses:
     lastState: {}
     name: datadog-init-apm-inject
     ready: true
-`
+```
 
 This is all orcastrated by a Mutating Webhook that kubernetes allows to perform the modification. You can see if by running:
 `kubectl get mutatingwebhookconfigurations`
@@ -136,7 +140,7 @@ If this does not work or you have a different network setup you can check the lo
 One we have run this a few times lets check the Datadog agent has some traces:
 `kubectl exec -it datadog-agent-7mz45 -- agent status | grep -A 20 APM`
 The output should look something like this:
-`
+```
 APM Agent
 =========
 
@@ -158,7 +162,8 @@ APM Agent
 
 
     Priority sampling rate for 'service:hello-datadog-deployment,env:none': 100.0%
-    `
+```
+Lastly lets check this is appearing in Datadog(Datadog traces)[https://app.datadoghq.com/apm/traces?]
 
 
 
