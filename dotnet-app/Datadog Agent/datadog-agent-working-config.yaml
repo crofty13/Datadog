@@ -1,0 +1,57 @@
+apiVersion: datadoghq.com/v2alpha1
+kind: DatadogAgent
+metadata:
+  name: datadog
+  namespace: default  # Change this to your preferred namespace if needed
+spec:
+  # Global configuration
+  global:
+    # Datadog credentials (requires separate Secret creation)
+    credentials:
+      apiSecret:
+        keyName: api-key
+        secretName: datadog-secret  # You'll need to create this Secret separately
+    site: datadoghq.com  # Change to your Datadog site (e.g., datadoghq.eu, us3.datadoghq.com)
+
+  # Feature configuration
+  features:
+    # Application Performance Monitoring (APM) with automatic instrumentation
+    apm:
+      instrumentation:
+        enabled: true
+        targets:
+        - name: default-target
+          ddTraceVersions:
+            dotnet: "3"  # Datadog .NET tracer version
+            java: "1"    # Datadog Java tracer version  
+            js: "5"      # Datadog JavaScript tracer version
+            php: "1"     # Datadog PHP tracer version
+            python: "3"  # Datadog Python tracer version
+
+    # Log collection configuration
+    logCollection:
+      enabled: true              # Enable log collection
+      containerCollectAll: true  # Collect logs from ALL containers (no annotations needed)
+
+  # Critical fix for Docker Desktop and local Kubernetes environments
+  override:
+    nodeAgent:
+      env:
+      # This environment variable fixes kubelet connectivity issues in Docker Desktop
+      # Without this, the agent cannot discover container logs properly
+      - name: DD_KUBELET_TLS_VERIFY
+        value: "false"  # REQUIRED for Docker Desktop, minikube, kind, etc.
+
+---
+# You also need to create this Secret separately with your Datadog API key
+# Replace YOUR_DATADOG_API_KEY with your actual API key
+apiVersion: v1
+kind: Secret
+metadata:
+  name: datadog-secret
+  namespace: default  # Must match the namespace above
+type: Opaque
+data:
+  # Base64 encoded Datadog API key
+  # To encode your API key: echo -n "YOUR_API_KEY" | base64
+  api-key: "YOUR_BASE64_ENCODED_API_KEY_HERE"

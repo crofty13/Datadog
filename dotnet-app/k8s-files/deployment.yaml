@@ -1,0 +1,60 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: datadog-checker-noapm
+  namespace: apps
+  labels:
+    app: datadog-checker-noapm
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: datadog-checker
+  template:
+    metadata:
+      labels:
+        app: datadog-checker
+    spec:
+      containers:
+      - name: datadog-checker-noapm
+        image: datadog-checker-noapm:latest
+        imagePullPolicy: Never
+        ports:
+        - containerPort: 8080
+          name: http
+        env:
+        - name: ASPNETCORE_ENVIRONMENT
+          value: "Development"
+        - name: ASPNETCORE_URLS
+          value: "http://+:8080"
+        resources:
+          requests:
+            memory: "64Mi"
+            cpu: "50m"
+          limits:
+            memory: "256Mi"
+            cpu: "200m"
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8080
+          initialDelaySeconds: 15
+          periodSeconds: 30
+          timeoutSeconds: 5
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 8080
+          initialDelaySeconds: 5
+          periodSeconds: 10
+          timeoutSeconds: 5
+        volumeMounts:
+        - name: logs
+          mountPath: /app/logs
+      volumes:
+      - name: logs
+        hostPath:
+          path: /tmp/status-checker-logs
+          type: DirectoryOrCreate
+      dnsPolicy: Default
+      hostNetwork: false

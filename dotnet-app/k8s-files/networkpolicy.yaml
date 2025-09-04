@@ -1,0 +1,23 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: datadog-checker-netpol
+  namespace: apps  # Added namespace
+spec:
+  podSelector:
+    matchLabels:
+      app: datadog-checker
+  policyTypes:
+  - Ingress
+  - Egress
+  ingress:
+  - from:
+    - podSelector: {}  # Allow from any pod in the same namespace
+    - namespaceSelector:
+        matchLabels:
+          name: ingress-nginx
+    ports:
+    - protocol: TCP
+      port: 8080
+  egress:
+  - {}  # Allow all outbound traffic (needed for external HTTP requests)

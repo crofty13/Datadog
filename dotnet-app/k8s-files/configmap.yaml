@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: datadog-checker-config
+  namespace: apps
+data:
+  appsettings.json: |
+    {
+      "Logging": {
+        "LogLevel": {
+          "Default": "Information",
+          "Microsoft.AspNetCore": "Information"
+        }
+      },
+      "AllowedHosts": "*",
+      "Datadog": {
+        "Service": "datadog-checker",
+        "Environment": "kubernetes-local",
+        "Version": "1.0.0"
+      }
+    }

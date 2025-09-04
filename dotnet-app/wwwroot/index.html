@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Status Checker</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            background-color: #f5f5f5;
+        }
+        
+        .container {
+            text-align: center;
+            background: white;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            max-width: 500px;
+            width: 90%;
+        }
+        
+        h1 {
+            color: #333;
+            margin-bottom: 30px;
+        }
+        
+        .button-container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        button {
+            padding: 15px 30px;
+            font-size: 16px;
+            font-weight: bold;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+        }
+        
+        .check-datadog {
+            background-color: #632ca6;
+            color: white;
+        }
+        
+        .check-datadog:hover {
+            background-color: #4a1f7a;
+        }
+        
+        .check-datacat {
+            background-color: #ff6b35;
+            color: white;
+        }
+        
+        .check-datacat:hover {
+            background-color: #e55a2e;
+        }
+        
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        
+        .status-display {
+            margin-top: 20px;
+            padding: 20px;
+            border-radius: 5px;
+            font-weight: bold;
+            min-height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+        }
+        
+        .status-online {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .status-offline {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .status-checking {
+            background-color: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeaa7;
+        }
+        
+        .status-error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .response-details {
+            font-size: 12px;
+            margin-top: 10px;
+            opacity: 0.8;
+        }
+        
+        .spinner {
+            border: 2px solid #f3f3f3;
+            border-top: 2px solid #3498db;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 10px;
+        }
+        
+        .debug-info {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #f8f9fa;
+            border-radius: 5px;
+            font-size: 12px;
+            text-align: left;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Website Status Checker</h1>
+        
+        <div class="button-container">
+            <button id="checkDatadog" class="check-datadog" onclick="checkService('datadog')">
+                Check Datadog
+            </button>
+            
+            <button id="checkDatacat" class="check-datacat" onclick="checkService('datacat')">
+                Check Datacat
+            </button>
+        </div>
+        
+        <div id="statusDisplay" class="status-display" style="display: none;">
+            <div id="statusContent"></div>
+        </div>
+        
+        <div id="debugInfo" class="debug-info" style="display: none;">
+            <div id="debugContent"></div>
+        </div>
+    </div>
+
+    <script>
+        // Get the base URL for API calls
+        const getBaseUrl = () => {
+            return window.location.origin;
+        };
+
+        // Show debug information
+        const showDebug = (message) => {
+            const debugInfo = document.getElementById('debugInfo');
+            const debugContent = document.getElementById('debugContent');
+            debugInfo.style.display = 'block';
+            debugContent.innerHTML += `<div>${new Date().toLocaleTimeString()}: ${message}</div>`;
+        };
+
+        async function checkService(service) {
+            const statusDisplay = document.getElementById('statusDisplay');
+            const statusContent = document.getElementById('statusContent');
+            const buttons = document.querySelectorAll('button');
+            
+            // Clear previous debug info
+            document.getElementById('debugContent').innerHTML = '';
+            
+            showDebug(`Starting ${service} check...`);
+            
+            // Disable buttons during request
+            buttons.forEach(btn => btn.disabled = true);
+            
+            // Show checking status
+            statusDisplay.style.display = 'block';
+            statusDisplay.className = 'status-display status-checking';
+            statusContent.innerHTML = `
+                <div class="spinner"></div>
+                <div>Checking ${service === 'datadog' ? 'Datadog' : 'Datacat'}...</div>
+            `;
+            
+            try {
+                const baseUrl = getBaseUrl();
+                const endpoint = service === 'datadog' ? '/api/status/check-datadog' : '/api/status/check-datacat';
+                const fullUrl = `${baseUrl}${endpoint}`;
+                
+                showDebug(`Making request to: ${fullUrl}`);
+                
+                const response = await fetch(fullUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    signal: AbortSignal.timeout(30000)
+                });
+                
+                showDebug(`Response status: ${response.status} ${response.statusText}`);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+                const responseText = await response.text();
+                showDebug(`Response text length: ${responseText.length}`);
+                
+                if (!responseText.trim()) {
+                    throw new Error('Empty response from server');
+                }
+                
+                let result;
+                try {
+                    result = JSON.parse(responseText);
+                } catch (parseError) {
+                    showDebug(`JSON parse error: ${parseError.message}`);
+                    throw new Error(`Invalid JSON response: ${parseError.message}`);
+                }
+                
+                showDebug(`Parsed result: ${JSON.stringify(result)}`);
+                
+                // Update display based on result
+                if (result.status === 'online') {
+                    statusDisplay.className = 'status-display status-online';
+                    statusContent.innerHTML = `
+                        <div>${result.service} is ONLINE ✅</div>
+                        <div class="response-details">
+                            Status Code: ${result.statusCode} | Response Time: ${result.responseTime}ms
+                            <br>Request ID: ${result.requestId}
+                        </div>
+                    `;
+                } else {
+                    statusDisplay.className = 'status-display status-offline';
+                    const errorText = result.error ? ` (${result.error})` : '';
+                    statusContent.innerHTML = `
+                        <div>${result.service} is OFFLINE ❌</div>
+                        <div class="response-details">
+                            ${result.statusCode ? `Status Code: ${result.statusCode} | ` : ''}Response Time: ${result.responseTime}ms${errorText}
+                            <br>Request ID: ${result.requestId}
+                        </div>
+                    `;
+                }
+                
+            } catch (error) {
+                showDebug(`Error caught: ${error.name} - ${error.message}`);
+                
+                statusDisplay.className = 'status-display status-error';
+                
+                let errorMessage = 'Unknown error';
+                if (error.name === 'TimeoutError') {
+                    errorMessage = 'Request timed out';
+                } else if (error.name === 'TypeError' && error.message.includes('fetch')) {
+                    errorMessage = 'Network connection failed';
+                } else {
+                    errorMessage = error.message;
+                }
+                
+                statusContent.innerHTML = `
+                    <div>Error checking ${service === 'datadog' ? 'Datadog' : 'Datacat'} ❌</div>
+                    <div class="response-details">
+                        Error: ${errorMessage}
+                        <br>Check the debug information below
+                    </div>
+                `;
+            } finally {
+                // Re-enable buttons
+                buttons.forEach(btn => btn.disabled = false);
+            }
+        }
+
+        // Test connectivity on page load
+        window.addEventListener('load', async () => {
+            try {
+                const response = await fetch('/health');
+                const result = await response.json();
+                showDebug(`Health check successful: ${JSON.stringify(result)}`);
+            } catch (error) {
+                showDebug(`Health check failed: ${error.message}`);
+                
+                const statusDisplay = document.getElementById('statusDisplay');
+                const statusContent = document.getElementById('statusContent');
+                
+                statusDisplay.style.display = 'block';
+                statusDisplay.className = 'status-display status-error';
+                statusContent.innerHTML = `
+                    <div>⚠️ API Connection Issue</div>
+                    <div class="response-details">
+                        Cannot connect to the backend API. Please check the container logs.
+                    </div>
+                `;
+            }
+        });
+    </script>
+</body>
+</html>

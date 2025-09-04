@@ -20,4 +20,17 @@ spec:
           image: crofty1300/hello-datadog-dotnet:arm64
           ports:
             - containerPort: 80
-
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: hello-datadog-service
+  namespace: apps
+spec:
+  type: LoadBalancer
+  selector:
+    app: hello-datadog
+  ports:
+    - protocol: TCP
+      port: 8080         # Exposed port to connect to
+      targetPort: 80     # Internal port
