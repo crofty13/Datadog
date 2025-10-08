@@ -12,7 +12,7 @@ fi
 
 # Build the image locally
 echo "🔨 Building Docker image..."
-docker build -t datadog-checker-noapm:latest -f ../Dockerfile
+docker build -t datadog-checker-noapm:latest -f ../Dockerfile ..
 
 # Check if we're using Docker Desktop or minikube
 if kubectl config current-context | grep -q "docker-desktop"; then

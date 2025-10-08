@@ -1,5 +1,5 @@
 # Datadog Agent Deployment Guide
-
+# This is for Kubernetes running locally on Docker where TLS verification is disabled. alter this if it isn't what you want.
 ## Overview
 This guide provides the working configuration for deploying Datadog Agent via the Datadog Operator with full log collection support for Docker Desktop and local Kubernetes environments.
 
