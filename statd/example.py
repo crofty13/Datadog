@@ -6,6 +6,12 @@ options = {
     'statsd_port':8125
 }
 
+print("This is works with the following defaults")
+for key,value in options.items():
+        print(key, value)
+
+
+
 initialize(**options)
 
 while(1):
