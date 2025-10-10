@@ -14,17 +14,19 @@ def index():
             <p><a href="/">Go back</a></p>
         """
 
+
+def goodbye():
+    if request.method == "GET":
+        
+        return f"""
+            <h1>Goodbye!</h1>
+            <p><a href="/">Go back</a></p>
+        """
+
+
+
+
     # ... your GET handler or template rendering here ...
-
-    return '''
-        <h1>Welcome!</h1>
-        <form method="POST">
-            Name: <input type="text" name="name"><br>
-            City: <input type="text" name="city"><br>
-            <input type="submit" value="Submit">
-        </form>
-    '''
-
 if __name__ == "__main__":
     import os
     app.run(debug=os.getenv('FLASK_DEBUG', 'False').lower() == 'true')
