@@ -19,8 +19,8 @@ while(True):
 	    result = subprocess.run(command, check=True, capture_output=True, text=True)
 	    print("Command output:", result.stdout)
 	except subprocess.CalledProcessError as e:
-	    print("Error:", e.stderr)
-
+		print("Error:", e.stderr)
+		break
 	statsd.gauge('dans_open_chrome_tabs', int(result.stdout), tags=["browser:chrome"])
 
 	time.sleep(10)
